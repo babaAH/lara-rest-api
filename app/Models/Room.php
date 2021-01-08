@@ -12,17 +12,36 @@ class Room extends Model
     /** Table name */
     protected $table = 'rooms';
 
-    /** Room - Booking 1 to Many relation func  */
+        
+    /**
+     * bookings
+     *
+     * @return void
+     */
     public function bookings()
     {
-        return $this->hasMany(Bookings::class);
+        return $this->hasMany(\App\Models\Booking::class);
     }
 
-    /** For mass assigment */
+    /**
+     * fillable
+     * 
+     * Need laravel for mass assigment
+     * 
+     * @var array
+     */
     protected $fillable = [
         'active', 'description', 'price'
     ];
-
+    
+    /**
+     * scopeIsActive
+     *
+     *  return only active models
+     * 
+     * @param  mixed $query
+     * @return void
+     */
     public function scopeIsActive($query)
     {
         return $query->where('active', true);

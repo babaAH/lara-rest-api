@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 
 use \App\Http\Requests\Room\RoomCreateRequest;
 
 use \App\Models\Room as RoomModel;
+use \App\Models\Booking as BookingModel;
 
 class Room extends Controller
 {
@@ -17,7 +19,14 @@ class Room extends Controller
      */
     public function index()
     {
-        $rooms = RoomModel::isActive()->paginate(12)->toArray();
+        $column = $this->getOrderColumn();
+        $direction = $this->getDirectionValue();
+
+        $rooms = RoomModel::isActive()
+            ->orderBy($column, $direction)
+            ->paginate(12)
+            ->toArray();
+            
         return response()->json(
             $rooms
         );
@@ -53,9 +62,59 @@ class Room extends Controller
      */
     public function destroy($id)
     {
-        $room = RoomModel::find($id)->get();
+        $room = RoomModel::find($id);
+
+        $this->deleteCoupliedBookings($room->bookings() ?? []);
 
         $room->active = false;
         $room->save();
+
+        return response()->json([
+            "error" => false,
+        ]);
+    }
+        
+    /**
+     * deleteCoupliedBookings
+     *
+     * @param  mixed $bookingsArr
+     * @return void
+     */
+    private function deleteCoupliedBookings($bookingsArr)
+    {
+        foreach($bookingsArr as $booking){
+            $booking->delete();
+            $booking->save();
+        }
+    }
+
+    private function getOrderColumn()
+    {
+        $val = \Validator::make([
+            'order' => \Request::get("order"), 
+        ],
+        [
+            'order' => 'in:price,created_at',
+        ]);
+
+        $val->passes() ? $columnName = \Request::get("order") : $columnName = 'created_at';
+
+        return $columnName;
+    }
+
+    private function getDirectionValue()
+    {
+        
+        $val = \Validator::make([
+            'direction' => \Request::get("direction")
+        ],
+        [
+            'direction' => 'in:asc,desc'
+        ]);
+
+        $val->passes() ? $dirVal = \Request::get("direction") : $dirVal = 'asc';
+        
+        return $dirVal;
+
     }
 }

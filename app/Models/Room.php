@@ -12,11 +12,11 @@ class Room extends Model
     /** Table name */
     protected $table = 'rooms';
 
-    public $hasMany = [
-        'bookings' => [
-            
-        ]
-    ];
+    /** Room - Booking 1 to Many relation func  */
+    public function bookings()
+    {
+        return $this->hasMany(Bookings::class);
+    }
 
     /** For mass assigment */
     protected $fillable = [

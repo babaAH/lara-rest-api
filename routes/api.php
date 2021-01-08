@@ -18,5 +18,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::resource('room', \App\Http\Controllers\Room::class);
+Route::resource('room', \App\Http\Controllers\Room::class, ['except' => [
+    'update', 'edit', 'show', 'create'
+]]);
+
 Route::resource('booking', \App\Http\Controllers\Booking::class);

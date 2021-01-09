@@ -12,17 +12,6 @@ class Room extends Model
     /** Table name */
     protected $table = 'rooms';
 
-        
-    /**
-     * bookings
-     *
-     * @return void
-     */
-    public function bookings()
-    {
-        return $this->hasMany(\App\Models\Booking::class);
-    }
-
     /**
      * fillable
      * 
@@ -33,6 +22,14 @@ class Room extends Model
     protected $fillable = [
         'active', 'description', 'price'
     ];
+
+    /**
+     * Get related \App\Models\Booking
+     */
+    public function bookings()
+    {
+        return $this->hasMany(\App\Models\Booking::class);
+    }
     
     /**
      * scopeIsActive

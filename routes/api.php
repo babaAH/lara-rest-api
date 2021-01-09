@@ -22,4 +22,6 @@ Route::resource('room', \App\Http\Controllers\Room::class, ['except' => [
     'update', 'edit', 'show', 'create'
 ]]);
 
-Route::resource('booking', \App\Http\Controllers\Booking::class);
+Route::resource('booking', \App\Http\Controllers\Booking::class, ['except' => [
+    'update', 'edit', 'show', 'create'
+]]);

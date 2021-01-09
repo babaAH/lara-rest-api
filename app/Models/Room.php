@@ -5,8 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema()
+ */
 class Room extends Model
 {
+    /**
+     * 
+     *  @OA\Property(
+     *      property="active",
+     *      type="boolean"
+     *  ),
+     *  @OA\Property(
+     *      property="description",
+     *      type="string"
+     *  ),
+     *  @OA\Property(
+     *      property="price",
+     *      type="integer"
+     *  )
+     * )
+     */
     use HasFactory;
 
     /** Table name */

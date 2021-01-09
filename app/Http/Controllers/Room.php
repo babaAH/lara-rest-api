@@ -10,6 +10,20 @@ use \App\Http\Requests\Room\RoomCreateRequest;
 use \App\Models\Room as RoomModel;
 use \App\Models\Booking as BookingModel;
 
+/**
+ * @OA\Info(title="My First API", version="0.1")
+ */
+/**
+ * @SWG\Swagger(
+ *   schemes={"http"},
+ *   host="",
+ *   basePath="/api/docs",
+ *   @SWG\Info(
+ *     title="Booking Room API",
+ *     version="1.0.0"
+ *   )
+ * )
+ */
 class Room extends Controller
 {
     private $resp = [
@@ -17,6 +31,26 @@ class Room extends Controller
     ];
     private $status = 200;
 
+    
+    /**
+     * @OA\Get(
+     *     path="/posts",
+     *     summary="Get list of blog posts",
+     *     tags={"Posts"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\Schema(
+     *             type="array",
+     *             @OA\Items(ref="#/definitions/Post")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized user",
+     *     ),
+     * )
+     */
     /**
      * Display a listing of the resource.
      *

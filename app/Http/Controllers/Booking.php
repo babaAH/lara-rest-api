@@ -33,11 +33,12 @@ class Booking extends Controller
         if($val->passes()){
             $room = RoomModel::findOrFail($data['id']);
 
-            $bookings = $room->whereHas('rooms', function($query){
-                return $query->paginate(12);
-            });
+            $bookings = $room->bookings()
+                ->orderBy('start_at')
+                ->paginate(12)
+                ->toArray();
 
-            $resp["bookings"] = $bookings;
+            $this->resp["bookings"] = $bookings;
         }else{
             $this->resp["error"] = true;
             $this->resp["msg"] = $val->messages();
@@ -49,10 +50,6 @@ class Booking extends Controller
         );
     }
 
-    /**
-     * Отрефакторить
-     * Вместо @param \Illuminate\Http\Request сделать @param \Illuminate\Http\BookingStoreRequest
-     */
     /**
      * Store a newly created resource in storage.
      *
@@ -73,6 +70,7 @@ class Booking extends Controller
             ]);
 
             $room->bookings()->save($booking);
+            $this->resp["booking_id"] = $booking->id;
         }else{
             $this->resp["error"] = true;
             $this->resp["msg"] = $val->messages();
@@ -80,16 +78,6 @@ class Booking extends Controller
         }
 
         return response()->json($this->resp, $this->status);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
     }
 
     /**
@@ -102,6 +90,9 @@ class Booking extends Controller
     {
         $booking = BookingModel::findOrFail($id);
         $booking->delete();
+        return response()->json(
+            ["success" => true]
+        );
     }
     
     /**

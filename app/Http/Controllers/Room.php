@@ -26,7 +26,7 @@ class Room extends Controller
             ->orderBy($column, $direction)
             ->paginate(12)
             ->toArray();
-            
+
         return response()->json(
             $rooms
         );
@@ -35,12 +35,15 @@ class Room extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Room\RoomCreateRequest  $request
+     * @param  Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $data = $request->all();
+        
+        $val = $this->makeStoreValidation($data);
+
         $room = RoomModel::create([
             'active'      => $data['active'],
             'price'       => $data['price'],
@@ -112,9 +115,9 @@ class Room extends Controller
             'direction' => 'in:asc,desc'
         ]);
 
-        $val->passes() ? $dirVal = \Request::get("direction") : $dirVal = 'asc';
+        $val->passes() ? $directionValue = \Request::get("direction") : $directionValue = 'asc';
         
-        return $dirVal;
+        return $directionValue;
 
     }
 }

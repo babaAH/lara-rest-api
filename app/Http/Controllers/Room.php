@@ -10,20 +10,6 @@ use \App\Http\Requests\Room\RoomCreateRequest;
 use \App\Models\Room as RoomModel;
 use \App\Models\Booking as BookingModel;
 
-/**
- * @OA\Info(title="My First API", version="0.1")
- */
-/**
- * @SWG\Swagger(
- *   schemes={"http"},
- *   host="",
- *   basePath="/api/docs",
- *   @SWG\Info(
- *     title="Booking Room API",
- *     version="1.0.0"
- *   )
- * )
- */
 class Room extends Controller
 {
     private $resp = [
@@ -34,20 +20,32 @@ class Room extends Controller
     
     /**
      * @OA\Get(
-     *     path="/posts",
-     *     summary="Get list of blog posts",
-     *     tags={"Posts"},
+     *     path="/api/room",
+     *     summary="Получение списка номеров",
+     *     tags={"Room"},
+     *     @OA\Parameter(
+     *         name="order",
+     *         in="query",
+     *         description="По какому столбцу производить сортировку",
+     *         required=false,
+     *     ),
+     *     @OA\Parameter(
+     *         name="direction",
+     *         in="query",
+     *         description="Производить сортировку по возрастанию или убыванию",
+     *         required=false,
+     *     ), 
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
      *         @OA\Schema(
      *             type="array",
-     *             @OA\Items(ref="#/definitions/Post")
+     *             @OA\Items(ref="#/components/schemas/Room")
      *         ),
      *     ),
      *     @OA\Response(
-     *         response="401",
-     *         description="Unauthorized user",
+     *         response="400",
+     *         description="Bad request",
      *     ),
      * )
      */
@@ -66,12 +64,35 @@ class Room extends Controller
             ->paginate(12)
             ->toArray();
 
-        return response()->json([
-            $this->resp,
-            "rooms" => $rooms
-        ]);
+        $this->resp["rooms"] = $rooms;
+
+        return response()->json($this->resp, $this->status);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/room",
+     *     summary="Создание номера",
+     *     tags={"Room"},
+     *     @OA\RequestBody(
+     *         description="Параметры для создания комнаты",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Room"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Room")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad request",
+     *     ),
+     * )
+     */
     /**
      * Store a newly created resource in storage.
      *
@@ -102,7 +123,35 @@ class Room extends Controller
 
         return response()->json($this->resp, $this->status);
     }
-
+    
+    /**
+     * @OA\Delete(
+     *     path="/api/room/{id}",
+     *     summary="Удаление номера",
+     *     tags={"Room"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID номера",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *         )
+     *     ), 
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\Schema(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Room")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad request",
+     *     ),
+     * )
+     */
     /**
      * Remove the specified resource from storage.
      *

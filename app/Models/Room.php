@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @OA\Schema()
+ * @OA\Schema(
+ *   schema="Room",
+ *   type="object",
+ * )
  */
 class Room extends Model
 {

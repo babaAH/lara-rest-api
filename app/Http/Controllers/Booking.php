@@ -15,11 +15,30 @@ class Booking extends Controller
     private $status = 200;
 
     /**
-     * Отрефакторить:
-     * 1.? FormRequest
-     * 2. вынести валидацию в отдельный метод
+     * @OA\Get(
+     *     path="/api/booking",
+     *     summary="Получение списка броней номера отеля",
+     *     tags={"Booking"},
+     *     @OA\Parameter(
+     *         name="room_id",
+     *         in="query",
+     *         description="ID комнаты",
+     *         required=true,
+     *     ), 
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\Schema(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Booking")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad request",
+     *     ),
+     * )
      */
-
     /**
      * Display \App\Models\Bookings by Room
      *
@@ -31,7 +50,7 @@ class Booking extends Controller
         $val = $this->makeIndexValidation($data = $req->all());
 
         if($val->passes()){
-            $room = RoomModel::findOrFail($data['id']);
+            $room = RoomModel::findOrFail($data['room_id']);
 
             $bookings = $room->bookings()
                 ->orderBy('start_at')
@@ -50,6 +69,37 @@ class Booking extends Controller
         );
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/booking",
+     *     summary="Создание брони",
+     *     tags={"Booking"},
+     *     @OA\RequestBody(
+     *         description="Параметры для создания брони",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Booking"),
+     *     ),
+    *      @OA\Parameter(
+    *          name="room_id",
+    *          in="query",
+    *          description="ID комнаты",
+    *          required=true,
+    *      ), 
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\Schema(
+     *             type="array",
+     *             @OA\Items(
+     *                 ref="#/components/schemas/Booking")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad request",
+     *     ),
+     * )
+     */
     /**
      * Store a newly created resource in storage.
      *
@@ -81,6 +131,31 @@ class Booking extends Controller
     }
 
     /**
+     * @OA\Delete(
+     *     path="/api/booking/{id}",
+     *     summary="Удаление брони",
+     *     tags={"Booking"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID брони",
+     *         required=true,
+     *     ), 
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\Schema(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Booking")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad request",
+     *     ),
+     * )
+     */
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -104,7 +179,7 @@ class Booking extends Controller
     private function makeIndexValidation($data)
     {
         return \Validator::make($data,[
-            'id' => 'required|integer',
+            'room_id' => 'required|integer',
         ]);
     }
 

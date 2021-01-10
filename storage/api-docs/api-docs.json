@@ -1,22 +1,179 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "My First API",
+        "title": "Some Booking API",
         "version": "0.1"
     },
     "paths": {
-        "/posts": {
+        "/api/booking": {
             "get": {
                 "tags": [
-                    "Posts"
+                    "Booking"
                 ],
-                "summary": "Get list of blog posts",
+                "summary": "Получение списка броней",
+                "parameters": [
+                    {
+                        "name": "room_id",
+                        "in": "query",
+                        "description": "ID комнаты",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
                     },
-                    "401": {
-                        "description": "Unauthorized user"
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Создание брони",
+                "parameters": [
+                    {
+                        "name": "room_id",
+                        "in": "query",
+                        "description": "ID комнаты",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Параметры для создания брони",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Booking"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/booking/{id}": {
+            "delete": {
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Удаление брони",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID брони",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/room": {
+            "get": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Получение списка номеров",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "По какому столбцу производить сортировку",
+                        "required": false
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Производить сортировку по возрастанию или убыванию",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Создание номера",
+                "requestBody": {
+                    "description": "Параметры для создания комнаты",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Room"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Room"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/api/room/{id}": {
+            "delete": {
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Удаление номера",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID номера",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     }
                 }
             }
@@ -24,6 +181,20 @@
     },
     "components": {
         "schemas": {
+            "Booking": {
+                "properties": {
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "start_at": {
+                        "type": "string"
+                    },
+                    "end_at": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "Room": {
                 "properties": {
                     "active": {

@@ -5,8 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+/**
+ * @OA\Schema(
+ *   schema="Booking",
+ *   type="object",
+ * )
+ */
 class Booking extends Model
 {
+    /**
+     * 
+     *  @OA\Property(
+     *      property="active",
+     *      type="boolean"
+     *  ),
+     *  @OA\Property(
+     *      property="start_at",
+     *      type="string"
+     *  ),
+     *  @OA\Property(
+     *      property="end_at",
+     *      type="integer"
+     *  )
+     * )
+     */
     use HasFactory;
 
     

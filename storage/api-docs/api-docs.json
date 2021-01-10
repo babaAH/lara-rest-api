@@ -10,7 +10,7 @@
                 "tags": [
                     "Booking"
                 ],
-                "summary": "Получение списка броней",
+                "summary": "Получение списка броней номера отеля",
                 "parameters": [
                     {
                         "name": "room_id",

@@ -50,23 +50,26 @@ class Booking extends Controller
         $val = $this->makeIndexValidation($data = $req->all());
 
         if($val->passes()){
-            $room = RoomModel::findOrFail($data['room_id']);
+            $room = RoomModel::find($data['room_id']);
 
-            $bookings = $room->bookings()
+            if($room){
+                $bookings = $room->bookings()
                 ->orderBy('start_at')
                 ->paginate(12)
                 ->toArray();
 
-            $this->resp["bookings"] = $bookings;
+                $this->resp["bookings"] = $bookings;
+            }else{
+                $this->setNotFoundData();
+            }
+
         }else{
             $this->resp["error"] = true;
             $this->resp["msg"] = $val->messages();
             $this->status = 400;
         }
 
-        return response()->json(
-            $this->resp, $this->status
-        );
+        return $this->returnJsonResponse();
     }
 
     /**
@@ -98,6 +101,10 @@ class Booking extends Controller
      *         response="400",
      *         description="Bad request",
      *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Бронь не существует",
+     *     ),
      * )
      */
     /**
@@ -112,22 +119,16 @@ class Booking extends Controller
         $val = $this->makeStoreValidation($data);
 
         if($val->passes()){
-            $room = RoomModel::findOrFail($data['room_id']);
-            
-            $booking = BookingModel::create([
-                'start_at' => $data['start_at'],
-                'end_at'   => $data['end_at'],
-            ]);
+            $room = RoomModel::find($data['room_id']);
 
-            $room->bookings()->save($booking);
-            $this->resp["booking_id"] = $booking->id;
+            $room ? $this->resp["booking_id"] = $this->createBooking($data, $room)->id : $this->setNotFoundData();
         }else{
             $this->resp["error"] = true;
             $this->resp["msg"] = $val->messages();
             $this->status = 400;
         }
 
-        return response()->json($this->resp, $this->status);
+        return $this->returnJsonResponse();
     }
 
     /**
@@ -153,6 +154,10 @@ class Booking extends Controller
      *         response="400",
      *         description="Bad request",
      *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Бронь не существует",
+     *     ),
      * )
      */
     /**
@@ -163,11 +168,10 @@ class Booking extends Controller
      */
     public function destroy($id)
     {
-        $booking = BookingModel::findOrFail($id);
-        $booking->delete();
-        return response()->json(
-            ["success" => true]
-        );
+        $booking = BookingModel::find($id);
+
+        $booking ? $booking->delete() : $this->setNotFoundData();
+        return $this->returnJsonResponse();
     }
     
     /**
@@ -190,5 +194,35 @@ class Booking extends Controller
             'start_at' => 'required|date_format:Y-m-d',
             'end_at'   => 'required|date_format:Y-m-d'
         ]);
+    }
+
+    private function returnJsonResponse()
+    {
+        return response()->json($this->resp, $this->status);
+    }
+    
+    /**
+     * createBooking
+     *
+     * @param  Array $data
+     * @return \App\Models\Booking
+     */
+    private function createBooking(Array $data, $room)
+    {
+        $booking = BookingModel::create([
+            'start_at' => $data['start_at'],
+            'end_at'   => $data['end_at'],
+        ]);
+
+        $room->bookings()->save($booking);
+
+        return $booking;
+    }
+
+    private function setNotFoundData()
+    {
+        $this->resp['error'] = true;
+        $this->resp['msg'] = 'Номер не найден';
+        $this->status = 404;
     }
 }

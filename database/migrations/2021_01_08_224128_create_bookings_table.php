@@ -16,8 +16,8 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('room_id')->nullable();
-            $table->timestamp('start_at', $precision=0);
-            $table->timestamp('end_at', $precision=0);
+            $table->timestamp('start_at', $precision=0)->nullable();
+            $table->timestamp('end_at', $precision=0)->nullable();
             $table->timestamps();
             $table->foreign("room_id")->references('id')->on('rooms')->onDelete('cascade');
         });

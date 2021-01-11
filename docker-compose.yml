@@ -1,74 +1,49 @@
-# For more information: https://laravel.com/docs/sail
-version: '3'
+version: "3.7"
 services:
-    laravel.test:
+    app:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.0
-            dockerfile: Dockerfile
             args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.0/app
-        ports:
-            - '${APP_PORT:-80}:80'
+                user: sammy
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: digitalocean.com/php
+        container_name: lara_rest_app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - lara_rest
+
+    db:
+        image: mysql:5.7
+        container_name: lara_rest_db
+        restart: unless-stopped
         environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
+            MYSQL_DATABASE: lara_rest
+            MYSQL_ROOT_PASSWORD: pass
+            MYSQL_PASSWORD: lara_rest
+            MYSQL_USER: lara_rest
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
         volumes:
-            - '.:/var/www/html'
+            - ./docker-compose/mysql:/docker-entrypoint-initdb.d
         networks:
-            - sail
-        depends_on:
-            - mysql
-            - redis
-            # - selenium
-    # selenium:
-    #     image: 'selenium/standalone-chrome'
-    #     volumes:
-    #         - '/dev/shm:/dev/shm'
-    #     networks:
-    #         - sail
-    #     depends_on:
-    #         - laravel.test
-    mysql:
-        image: 'mysql:8.0'
+            - lara_rest
+
+    webserver:
+        image: nginx:alpine
+        container_name: lara_rest_nginx
+        restart: unless-stopped
         ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
-        environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        - "8050:80"
         volumes:
-            - 'sailmysql:/var/lib/mysql'
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d
         networks:
-            - sail
-    redis:
-        image: 'redis:alpine'
-        ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
-        volumes:
-            - 'sailredis:/data'
-        networks:
-            - sail
-    # memcached:
-    #     image: 'memcached:alpine'
-    #     ports:
-    #         - '11211:11211'
-    #     networks:
-    #         - sail
-    mailhog:
-        image: 'mailhog/mailhog:latest'
-        ports:
-            - 1025:1025
-            - 8025:8025
-        networks:
-            - sail
+            - lara_rest
+
 networks:
-    sail:
+    lara_rest:
         driver: bridge
-volumes:
-    sailmysql:
-        driver: local
-    sailredis:
-        driver: local

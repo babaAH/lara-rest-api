@@ -1,5 +1,5 @@
 1. Сперва необходимо создать .env-файл 
-<cp .env.example .env >
+`<cp .env.example .env >`
 <p>далее в файле .env необходимо изменить значения DB_HOST, DB_DATABASE, DB_PASSWORD, APP_URL</p>
 
 <hr>
